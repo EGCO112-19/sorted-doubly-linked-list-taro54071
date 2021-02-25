@@ -2,7 +2,13 @@
 struct Node {                                      
    int data; // each listNode contains a character 
    struct Node *nextPtr; // pointer to next node
-}; // end structure listNode                        
+   struct Node *prevPtr; // pointer to previous node
+}; // end structure listNode    
+
+//Move from Line 15
+typedef struct Node LLnode; // synonym for struct listNode
+typedef LLnode *LLPtr; // synonym for ListNode*
+
 // prototypes
 
 int deletes( LLPtr *sPtr, int value );
@@ -11,8 +17,7 @@ void insert( LLPtr *sPtr, int value );
 void printList( LLPtr currentPtr );
 void instructions( void );
 
-typedef struct Node LLnode; // synonym for struct listNode
-typedef LLnode *LLPtr; // synonym for ListNode*
+
 
 
 // display program instructions to user
@@ -49,11 +54,17 @@ void insert( LLPtr *sPtr, int value )
       // insert new node at beginning of list
       if ( previousPtr == NULL ) { 
          newPtr->nextPtr = *sPtr;
+         newPtr->prevPtr = NULL;
+         if(currentPtr)
+           currentPtr->prevPtr = newPtr;
          *sPtr = newPtr;
       } // end if
       else { // insert new node between previousPtr and currentPtr
          previousPtr->nextPtr = newPtr;
          newPtr->nextPtr = currentPtr;
+         newPtr->prevPtr = previousPtr;
+         if(currentPtr)
+            currentPtr->prevPtr= newPtr; //งงมากเลยครับมีบรรทัดนี้ทำไม แต่ถ้าไม่มีก็รันไม่ได้5555555 รบกวนอาจารย์ช่วยอธิบายในคลาสเรียนหน้าได้ไหมครับ หรือ ตอบในgoogle classroomก็ได้
       } // end else
    } // end if
    else {
@@ -72,6 +83,7 @@ int deletes( LLPtr *sPtr, int value )
    if ( value == ( *sPtr )->data ) { 
       tempPtr = *sPtr; // hold onto node being removed
       *sPtr = ( *sPtr )->nextPtr; // de-thread the node
+      (*sPtr)->prevPtr = NULL;
       free( tempPtr ); // free the de-threaded node
       return value;
    } // end if
@@ -89,6 +101,12 @@ int deletes( LLPtr *sPtr, int value )
       if ( currentPtr != NULL ) { 
          tempPtr = currentPtr;
          previousPtr->nextPtr = currentPtr->nextPtr;
+         previousPtr= currentPtr;
+         currentPtr = currentPtr->nextPtr;
+         if(currentPtr)
+         {
+           currentPtr->prevPtr = tempPtr->prevPtr;
+         }
          free( tempPtr );
          return value;
       } // end if
@@ -122,3 +140,23 @@ void printList( LLPtr currentPtr )
       puts( "NULL\n" );
    } // end else
 } // end function printList
+
+void printListR(LLPtr currentPtr){
+    if(isEmpty(currentPtr)){
+        puts("List is empty.\n");
+    }
+    else{
+        puts("The list is:");
+
+        while(currentPtr->nextPtr != NULL){
+            currentPtr = currentPtr->nextPtr;
+        }
+        
+        printf("NULL ");
+        while(currentPtr != NULL){
+            printf("--> %d ",currentPtr->data);
+            currentPtr = currentPtr->prevPtr;
+        }
+        printf("\n");
+    }
+}
